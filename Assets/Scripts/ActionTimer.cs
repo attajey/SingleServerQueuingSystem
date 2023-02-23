@@ -9,24 +9,41 @@
  */
 
 using System;
+
 public class ActionTimer
 {
     public bool Paused { get => _paused; set => _paused = value; }
     public bool Unpaused { get => !_paused; set => _paused = !value; }
 
     private Action _onCompleteCallback;
-    private Action<ActionTimer> _OnDestroyCallback;
+    private Action<ActionTimer> _onAfterCompleteCallback; // Passes itself to a action if something want to be done
     private Action<float> _onTickCallback;
     private float _timerTime;
     private bool _paused;
 
-    public ActionTimer(Action<ActionTimer> onDestroy)
+    // Should after complete be Called?
+    private bool _callOnAfterComplete = false;
+
+
+    public ActionTimer()
     {
-        _OnDestroyCallback = onDestroy;
+
+    }
+
+    public ActionTimer(bool callOnAfterComplete)
+    {
+        _callOnAfterComplete = callOnAfterComplete;
+    }
+
+    public ActionTimer(bool callOnAfterComplete, Action<ActionTimer> onAfterComplete)
+    {
+        _callOnAfterComplete = callOnAfterComplete;
+        _onAfterCompleteCallback = onAfterComplete;
     }
 
     public void StartTimer(float timer, Action completeCallback, Action<float> onTickCallback)
     {
+        _paused = false;
         _timerTime = timer;
         _onCompleteCallback += completeCallback;
         _onTickCallback += onTickCallback;
@@ -46,29 +63,42 @@ public class ActionTimer
     {
         if(Unpaused)
         {
-            _timerTime -= deltaTime;
-            _onTickCallback?.Invoke(_timerTime);
-
-            if (_timerTime < 0)
+            if (_timerTime <= 0)
             {
                 Complete();
-            } 
+            }
+
+            _timerTime -= deltaTime;
+            _onTickCallback?.Invoke(_timerTime);            
         }        
     }
 
     public void Complete()
     {
-        _onCompleteCallback.Invoke();
+        _paused = true;
+        _onCompleteCallback?.Invoke();
+
+       
+
+        if(_callOnAfterComplete)
+        {
+            _onAfterCompleteCallback?.Invoke(this);
+        }       
+    }
+
+    // > Clears call backs.
+    public void ClearCallbacks()
+    {
         _onCompleteCallback = null;
         _onTickCallback = null;
-        _OnDestroyCallback.Invoke(this);
+        _onAfterCompleteCallback = null;
     }
 
     public void CancelTimer()
     {
         _onCompleteCallback = null;
         _onTickCallback = null;
-        _OnDestroyCallback?.Invoke(this);
+        _onAfterCompleteCallback?.Invoke(this);
     }
 }
 

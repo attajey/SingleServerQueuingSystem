@@ -1,36 +1,24 @@
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Customer : MonoBehaviour
 {
-    // Parameters
-    private float arrivalTime;
-    private float serviceTime;
-    private int id;
+    private CustomerData customerData = new CustomerData(0,0,0);
 
-    public Customer CreateCustomer(int id, float arrivalTime, float serviceTime)
+    private NavMeshAgent navMeshAgent;
+    [SerializeField] private Transform exit;
+
+    private void Start()
     {
-        this.id = id;
-        this.arrivalTime = arrivalTime;
-        this.serviceTime = serviceTime;
-        return this;
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.SetDestination(new Vector3(-8,2,20));
     }
 
-    public float GetArrivalTime()
+    public void InitalizeCustomer(CustomerData customerData)
     {
-        return arrivalTime;
+        this.customerData = customerData;
     }
-
-    public float GetServiceTime()
-    {
-        return serviceTime;
-    }
-
-    public int GetId()
-    {
-        return id;
-    }
-
-
 
 
 }
