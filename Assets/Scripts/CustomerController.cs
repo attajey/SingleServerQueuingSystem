@@ -5,9 +5,16 @@ using UnityEngine.AI;
 
 public class CustomerController : MonoBehaviour
 {
-    public Transform atm;
+    public NavMeshAgent agent;
+    public Transform target;
+    public Transform targetCustomer;
     public Transform exit;
 
+    public bool InService { get; set; }
+    public GameObject AtmWindow;
+    public QueueManager queueManager;
+
+    //public Transform atm;
 
     public enum CustomerState
     {
@@ -17,23 +24,21 @@ public class CustomerController : MonoBehaviour
         Servicing,
         Serviced
     }
-
     public CustomerState customerState = CustomerState.None;
-    public Transform target;
-
-    public NavMeshAgent agent;
     void Start()
     {
-        customerState = CustomerState.Arrived;
-        atm = GameObject.FindGameObjectWithTag("ATM").transform;
+        AtmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
+        target = AtmWindow.transform;
         exit = GameObject.FindGameObjectWithTag("Exit").transform;
         agent = GetComponent<NavMeshAgent>();
+        
+        customerState = CustomerState.Arrived;
+        FSMCustomer();
     }
 
     // Update is called once per frame
     void Update()
     {
-        FSMCustomer();
         
     }
 
@@ -58,43 +63,126 @@ public class CustomerController : MonoBehaviour
                 break;
         }
     }
-
-    private void DoServiced()
+    private void DoArrived()
     {
-        //throw new NotImplementedException();
-    }
+        targetCustomer = target;
 
-    private void DoServing()
-    {
-        //throw new NotImplementedException();
-    }
+        queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
+        queueManager.Add(this.gameObject);
 
+        agent.SetDestination(targetCustomer.position);
+        agent.isStopped = false;
+        //throw new NotImplementedException();
+        //target = GetTarget();
+        //if (target != null)
+        //{
+        //    agent.SetDestination(target.position);
+        //}
+    }
     private void DoWaiting()
     {
         //throw new NotImplementedException();
     }
-
-    private void DoArrived()
+    private void DoServing()
     {
+        agent.isStopped = true;
+
         //throw new NotImplementedException();
-        target = GetTarget();
-        if (target != null)
+    }
+
+
+    private void DoServiced()
+    {
+        agent.SetDestination(exit.position);
+        agent.isStopped = false;
+        //throw new NotImplementedException();
+    }
+
+    public void ChangeState(CustomerState newCarState)
+    {
+        this.customerState = newCarState;
+        FSMCustomer();
+    }
+
+    public void ExitService(Transform target)
+    {
+        //this.SetInService(false);
+
+        queueManager.PopFirst();
+        ChangeState(CustomerState.Serviced);
+        //targetExit = target;
+
+        //navMeshAgent.SetDestination(target.position);
+        //navMeshAgent.isStopped = false;
+    }
+
+    public void SetInService(bool value)
+    {
+        //Chaneg        InService = value;
+        //if (InService)
+        //{
+        //    navMeshAgent.isStopped=true;
+        //}
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Customer")
         {
-            agent.SetDestination(target.position);
+            //this.navMeshAgent.desiredVelocity.
+            //if (targetCar == null)
+            //{
+            //targetCar = other.gameObject.transform;
+            //navMeshAgent.SetDestination(targetCar.position);
+            //}
+        }
+        else if (other.gameObject.tag == "ATMWindow")
+        {
+            ChangeState(CustomerState.Servicing);
+            //SetInService(true);
+        }
+        else if (other.gameObject.tag == "Exit")
+        {
+            Destroy(this.gameObject);
         }
     }
 
-    private Transform GetTarget()
+    //private Transform GetTarget()
+    //{
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+    //    {
+    //        return hit.transform;
+    //    }
+    //    else
+    //    {
+    //        return atm;
+    //    }
+    //}
+
+    private void OnDrawGizmos()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+#if DEBUG_CC
+        print("InCC.OnDrawGizmos:targetCar.ID=" + targetCar.gameObject.GetInstanceID());
+        print("InCC.OnDrawGizmos:targetCar.ID=" + targetExit.gameObject.GetInstanceID());
+
+#endif
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(this.transform.position, target.transform.position);
+        if (targetCustomer)
         {
-            return hit.transform;
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(this.transform.position, targetCustomer.transform.position);
+
         }
-        else
+        if (exit)
         {
-            return atm;
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(this.transform.position, exit.transform.position);
+
         }
+
+
     }
 
 }
