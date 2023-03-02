@@ -8,6 +8,7 @@ TagManager:
   - Enterance
   - Exit
   - ATMWindow
+  - Customer
   layers:
   - Default
   - TransparentFX

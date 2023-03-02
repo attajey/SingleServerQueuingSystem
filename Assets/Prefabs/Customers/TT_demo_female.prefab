@@ -382,9 +382,10 @@ GameObject:
   - component: {fileID: 6252356961367914557}
   - component: {fileID: 377092027}
   - component: {fileID: 377092028}
+  - component: {fileID: 7726874204767853927}
   m_Layer: 0
   m_Name: TT_demo_female
-  m_TagString: Untagged
+  m_TagString: Customer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -468,6 +469,20 @@ MonoBehaviour:
   AtmWindow: {fileID: 0}
   queueManager: {fileID: 0}
   customerState: -1
+--- !u!136 &7726874204767853927
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6252356961377389083}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1.7403483
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.8525822, z: -0}
 --- !u!1 &6252356961377389087
 GameObject:
   m_ObjectHideFlags: 0
