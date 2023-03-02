@@ -709,6 +709,7 @@ GameObject:
   - component: {fileID: 456622495}
   - component: {fileID: 456622494}
   - component: {fileID: 456622493}
+  - component: {fileID: 456622496}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -782,6 +783,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 16.69, y: -90, z: 0}
+--- !u!114 &456622496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456622492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b5da13719320a94dadae2afc3bcc2a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customerPrefab: {fileID: 6252356961377389083, guid: f10c84a1d513d3749b61eb26e2193a21, type: 3}
+  customerSpawnPlace: {fileID: 603086285}
+  arrivalRateInCustomerPerHour: 150
+  interArrivalTimeInHours: 0
+  minInterArrivalTimeInSeconds: 3
+  maxInterArrivalTimeInSeconds: 60
+  arrivalIntervalTimeStrategy: 0
 --- !u!1001 &472595194
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1084,7 +1104,7 @@ RectTransform:
   m_Children:
   - {fileID: 843399130}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1385,7 +1405,6 @@ GameObject:
   m_Component:
   - component: {fileID: 603086285}
   - component: {fileID: 603086284}
-  - component: {fileID: 603086286}
   m_Layer: 0
   m_Name: Enterance
   m_TagString: Enterance
@@ -1413,33 +1432,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 603086283}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5, y: 1, z: -26}
+  m_LocalPosition: {x: 0.39, y: 1, z: -26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2067208296}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &603086286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 603086283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b5da13719320a94dadae2afc3bcc2a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  customerPrefab: {fileID: 6252356961377389083, guid: f10c84a1d513d3749b61eb26e2193a21, type: 3}
-  customerSpawnPlace: {fileID: 603086285}
-  arrivalRateInCustomerPerHour: 20
-  interArrivalTimeInHours: 0
-  minInterArrivalTimeInSeconds: 3
-  maxInterArrivalTimeInSeconds: 60
-  arrivalIntervalTimeStrategy: 1
 --- !u!1 &613006665
 GameObject:
   m_ObjectHideFlags: 0
@@ -2127,9 +2126,9 @@ GameObject:
   m_Component:
   - component: {fileID: 911220307}
   - component: {fileID: 911220306}
-  - component: {fileID: 911220308}
   - component: {fileID: 911220309}
   - component: {fileID: 911220310}
+  - component: {fileID: 911220308}
   m_Layer: 0
   m_Name: ATMWindow
   m_TagString: ATMWindow
@@ -2148,8 +2147,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.3, y: 1.9, z: 1.99}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 9.440854, y: 1.9, z: 1.99}
+  m_Center: {x: 2.1230855, y: 0, z: 0}
 --- !u!4 &911220307
 Transform:
   m_ObjectHideFlags: 0
@@ -2158,12 +2157,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 911220305}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.046, y: 1.089, z: -12.986}
+  m_LocalPosition: {x: -21.046, y: 1, z: -12.986}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!122 &911220308
 Halo:
@@ -2193,7 +2192,7 @@ MonoBehaviour:
   customerExitPlace: {fileID: 2067208296}
   serviceRateAsCustomersPerHour: 400
   interServiceTimeInHours: 0
-  generateServices: 0
+  generateServices: 1
   minInterServiceTimeInSeconds: 3
   maxInterServiceTimeInSeconds: 30
   serviceIntervalTimeStrategy: 0
@@ -3563,7 +3562,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1752373217
 PrefabInstance:
@@ -4075,6 +4074,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2067208296}
   - component: {fileID: 2067208295}
+  - component: {fileID: 2067208297}
   m_Layer: 0
   m_Name: Exit
   m_TagString: Exit
@@ -4102,13 +4102,26 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2067208294}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 32}
+  m_LocalPosition: {x: -0.05, y: 1, z: 6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 603086285}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2067208297
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067208294}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.189064, y: 1, z: 6.7603955}
+  m_Center: {x: 0.07092953, y: 0, z: 0.1057632}
 --- !u!1 &2069149656
 GameObject:
   m_ObjectHideFlags: 0

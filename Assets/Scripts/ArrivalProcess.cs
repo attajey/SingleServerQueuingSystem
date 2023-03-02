@@ -20,7 +20,7 @@ public class ArrivalProcess : MonoBehaviour
     //private float interArrivalTimeInMin; // avg #mins between car arrivals
 
     // Control Simulation Data
-    private bool isSimulationRunning = false;
+    private bool isSimulationRunning = true;
 
     //Simple generation distribution - Uniform(min,max)
     //

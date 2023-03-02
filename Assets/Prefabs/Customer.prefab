@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7206282019941713741}
   - component: {fileID: 7206282019941713740}
   - component: {fileID: 7206282019941713776}
-  - component: {fileID: 7206282019941713777}
+  - component: {fileID: 3575922680281383308}
   m_Layer: 6
   m_Name: Customer
   m_TagString: Untagged
@@ -122,7 +122,7 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &7206282019941713777
+--- !u!114 &3575922680281383308
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,7 +131,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7206282019941713743}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24017a26fabc2254f846e116a0ce3759, type: 3}
+  m_Script: {fileID: 11500000, guid: 6045f0f5b2678ca438763e5db1372547, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
+  target: {fileID: 0}
+  targetCustomer: {fileID: 0}
   exit: {fileID: 0}
+  AtmWindow: {fileID: 0}
+  queueManager: {fileID: 0}
+  customerState: -1

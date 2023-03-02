@@ -49,7 +49,7 @@ public class ServiceProcess : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Car")
+        if (other.gameObject.tag == "Customer")
         {
             customerInService = other.gameObject;
             customerInService.GetComponent<CustomerController>().SetInService(true);

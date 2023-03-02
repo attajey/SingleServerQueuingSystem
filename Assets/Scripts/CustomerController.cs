@@ -6,9 +6,9 @@ using UnityEngine.AI;
 public class CustomerController : MonoBehaviour
 {
     public NavMeshAgent agent;
-    public Transform target;
+    public Transform target = null;
     public Transform targetCustomer;
-    public Transform exit;
+    public Transform exit = null;
 
     public bool InService { get; set; }
     public GameObject AtmWindow;
@@ -36,12 +36,6 @@ public class CustomerController : MonoBehaviour
         FSMCustomer();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void FSMCustomer()
     {
         switch (customerState)
@@ -53,6 +47,7 @@ public class CustomerController : MonoBehaviour
                 DoWaiting();
                 break;
             case CustomerState.Servicing:
+                Debug.Log("Entered Servicing");
                 DoServing();
                 break;
             case CustomerState.Serviced:
@@ -127,6 +122,7 @@ public class CustomerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("enter the trigger mother fucker");
         if (other.gameObject.tag == "Customer")
         {
             //this.navMeshAgent.desiredVelocity.
@@ -138,6 +134,7 @@ public class CustomerController : MonoBehaviour
         }
         else if (other.gameObject.tag == "ATMWindow")
         {
+            Debug.Log("Entered trigger atm");
             ChangeState(CustomerState.Servicing);
             //SetInService(true);
         }
@@ -160,29 +157,24 @@ public class CustomerController : MonoBehaviour
     //    }
     //}
 
-    private void OnDrawGizmos()
-    {
-#if DEBUG_CC
-        print("InCC.OnDrawGizmos:targetCar.ID=" + targetCar.gameObject.GetInstanceID());
-        print("InCC.OnDrawGizmos:targetCar.ID=" + targetExit.gameObject.GetInstanceID());
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawLine(this.transform.position, target.transform.position);
+    //    if (targetCustomer)
+    //    {
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawLine(this.transform.position, targetCustomer.transform.position);
 
-#endif
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(this.transform.position, target.transform.position);
-        if (targetCustomer)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(this.transform.position, targetCustomer.transform.position);
+    //    }
+    //    if (exit)
+    //    {
+    //        Gizmos.color = Color.green;
+    //        Gizmos.DrawLine(this.transform.position, exit.transform.position);
 
-        }
-        if (exit)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(this.transform.position, exit.transform.position);
-
-        }
+    //    }
 
 
-    }
+    //}
 
 }
