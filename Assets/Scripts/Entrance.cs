@@ -17,12 +17,12 @@ public class Entrance : MonoBehaviour
     private ActionTimer customerArrivalTimer;
 
     private Queue<CustomerData> customers;
-    public float delay = 0.2f;
     float timer;
     void Start()
     {
         customers = fileReader.GenerateCustomers();
         customerArrivalTimer = new ActionTimer();
+        InvokeRepeating("SpawnCustomer", 0, Random.Range(1, 4));
     }
 
     private void SpawnCustomer()
@@ -45,15 +45,6 @@ public class Entrance : MonoBehaviour
 
     private void Update()
     {
-        while (generateArrivals)
-        {
-            timer += Time.deltaTime;
-            if (timer > delay)
-            {
-                SpawnCustomer();
-                generateArrivals = false;
-            }
-        }
         customerArrivalTimer.Tick(Time.deltaTime);
     }
 }
