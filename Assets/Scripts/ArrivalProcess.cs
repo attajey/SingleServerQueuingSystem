@@ -6,6 +6,7 @@ public class ArrivalProcess : MonoBehaviour
 {
     [SerializeField] private GameObject customerPrefab;
     [SerializeField] private Transform customerSpawnPlace;
+    [SerializeField] private ServiceProcess atm;
 
 
     // For Expo Dist. we need the Lambda (the avg arrival rate, cars/hour)
@@ -37,14 +38,9 @@ public class ArrivalProcess : MonoBehaviour
 
     public ArrivalIntervalTimeStrategy arrivalIntervalTimeStrategy = ArrivalIntervalTimeStrategy.UniformIntervalTime;
 
-    QueueManager queueManager;
-
-
     void Start()
-    {
-        
+    {        
         isSimulationRunning = true;
-        queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
         interArrivalTimeInHours = 1.0f / arrivalRateInCustomerPerHour;
         interArrivalTimeInMinutes = interArrivalTimeInHours * 60;
         interArrivalTimeInSeconds = interArrivalTimeInMinutes * 60;
@@ -56,9 +52,8 @@ public class ArrivalProcess : MonoBehaviour
         while (isSimulationRunning)
         {
             GameObject customerGameObject = Instantiate(customerPrefab, customerSpawnPlace.position, Quaternion.identity);
+            atm.AddCustomer(customerGameObject);
 
-
-            //float nextArrivalTimeInMin = Utilities.GenerateExponentiallyDistributedValue(interArrivalTimeInMinutes);
             float timeToNextArrivalInSec = interArrivalTimeInSeconds;
 
 

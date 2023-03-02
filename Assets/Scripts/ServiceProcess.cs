@@ -16,16 +16,12 @@ public class ServiceProcess : MonoBehaviour
     //public float ServiceRateAsCarsPerHour = 20; // car/hour
     public bool generateServices = false;
 
-    //New as of Feb.23rd
     //Simple generation distribution - Uniform(min,max)
-    //
     public float minInterServiceTimeInSeconds = 3;
     public float maxInterServiceTimeInSeconds = 60;
-    //
-
-    //New as Feb.25th
+    
     //CarController carController;
-    QueueManager queueManager; //=new QueueManager();
+    QueueManager queueManager;
 
     public enum ServiceIntervalTimeStrategy
     {
@@ -38,29 +34,38 @@ public class ServiceProcess : MonoBehaviour
     public ServiceIntervalTimeStrategy serviceIntervalTimeStrategy = ServiceIntervalTimeStrategy.UniformIntervalTime;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         interServiceTimeInHours = 1.0f / serviceRateAsCustomersPerHour;
         interServiceTimeInMinutes = interServiceTimeInHours * 60;
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
-        //queueManager = this.GetComponent<QueueManager>();
-        //queueManager = new QueueManager();
-        //StartCoroutine(GenerateServices());
+
+        queueManager = GetComponent<QueueManager>();
     }
+
+    public void AddCustomer(GameObject newCustomer)
+    {
+        GameObject lastCustomer = queueManager.Last();
+        CustomerController newCustomerController = newCustomer.GetComponent<CustomerController>();
+
+        // If the Queue is empty
+        if (lastCustomer == null)
+        {
+            newCustomerController.InitCustomer(transform);
+        }
+        else
+        {
+            newCustomerController.InitCustomer(lastCustomer.transform);            
+        }
+
+        queueManager.Add(newCustomer);    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Customer")
         {
             customerInService = other.gameObject;
-            customerInService.GetComponent<CustomerController>().SetInService(true);
-
-            //if (queueManager.Count() == 0)
-            //{
-            //    queueManager.Add(carInService);
-            //}
-
             generateServices = true;
-            //carController = carInService.GetComponent<CarController>();
             StartCoroutine(GenerateServices());
         }
     }
@@ -68,7 +73,6 @@ public class ServiceProcess : MonoBehaviour
     {
         while (generateServices)
         {
-            //Instantiate(carPrefab, carSpawnPlace.position, Quaternion.identity);
             float timeToNextServiceInSec = interServiceTimeInSeconds;
             switch (serviceIntervalTimeStrategy)
             {
@@ -92,27 +96,11 @@ public class ServiceProcess : MonoBehaviour
 
             }
 
-            //New as of Feb.23rd
-            //float timeToNextServiceInSec = Random.Range(minInterServiceTimeInSeconds,maxInterServiceTimeInSeconds);
             generateServices = false;
             yield return new WaitForSeconds(timeToNextServiceInSec);
-
-            //yield return new WaitForSeconds(interServiceTimeInSeconds);
 
         }
         customerInService.GetComponent<CustomerController>().ExitService(customerExitPlace);
 
-    }
-    private void OnDrawGizmos()
-    {
-        //BoxCollidercarInService.GetComponent<BoxCollider>
-        if (customerInService)
-        {
-            Renderer r = customerInService.GetComponent<Renderer>();
-            r.material.color = Color.green;
-
-        }
-
-
-    }
+    }    
 }
