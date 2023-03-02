@@ -1129,6 +1129,13 @@ MonoBehaviour:
   fileReader: {fileID: 1661033396}
   customerPrefab: {fileID: 7206282019941713743, guid: 8c3372b23bff6f949a0a11b8ce70fd5e, type: 3}
   spawnlocations: []
+  Customer: {fileID: 7206282019941713743, guid: 8c3372b23bff6f949a0a11b8ce70fd5e, type: 3}
+  carSpawnPlace: {fileID: 1823338424}
+  arrivalRateAsCarsPerHour: 20
+  interArrivalTimeInHours: 0
+  generateArrivals: 1
+  minInterArrivalTimeInSeconds: 3
+  maxInterArrivalTimeInSeconds: 60
 --- !u!114 &1661033396
 MonoBehaviour:
   m_ObjectHideFlags: 0
