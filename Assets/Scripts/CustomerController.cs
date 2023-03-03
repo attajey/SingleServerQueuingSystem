@@ -31,12 +31,16 @@ public class CustomerController : MonoBehaviour
     {
         if (other.gameObject.tag == "ATMWindow")
         {
-            ChangeState(CustomerState.Servicing);
+            //ChangeState(CustomerState.Servicing);
         }
         else if (other.gameObject.tag == "Exit")
         {
             Destroy(this.gameObject);
             //this.gameObject.SetActive(false);
+        }
+        else if (other.gameObject.tag == "Customer")
+        {
+            //agent.isStopped = true;
         }
     }
 
@@ -62,7 +66,7 @@ public class CustomerController : MonoBehaviour
         target = atmWindow.transform;
 
         customerState = CustomerState.Arrived;
-        FSMCustomer();
+        //FSMCustomer();
     }
 
     void Update()
@@ -76,9 +80,11 @@ public class CustomerController : MonoBehaviour
         {
             case CustomerState.Arrived:
                 DoArrived();
+                SetAgentMovement();
                 break;
             case CustomerState.Waiting:
                 DoWaiting();
+                SetAgentMovement();
                 break;
             case CustomerState.Servicing:
                 DoServing();
@@ -95,11 +101,12 @@ public class CustomerController : MonoBehaviour
     private void DoArrived()
     {
         agent.SetDestination(target.position);
-        SetAgentMovement();
+        
     }
 
     private void DoWaiting()
     {
+        agent.isStopped = true;
     }
 
     private void DoServing()
@@ -115,37 +122,28 @@ public class CustomerController : MonoBehaviour
 
     private void SetAgentMovement()
     {
-
-        Debug.DrawRay(transform.position, transform.forward);
         RaycastHit hit;
-        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 3f)) // Look 5m in front
         {
             if (hit.transform.CompareTag("Customer"))
             {
-                Debug.Log(hit.transform.name);
-                //agent.SetDestination(hit.transform.position);
-                //agent.stoppingDistance= 50f;
-                //agent.isStopped = true;
-                agent.ResetPath();
-                Debug.Log(agent.isStopped);
+                ChangeState(CustomerState.Waiting);
             }
             else
             {
-                agent.SetDestination(target.position);
-                //agent.stoppingDistance = 0.5f;
-                //agent.isStopped = false;
+                ChangeState(CustomerState.Arrived);
             }
         }
         else
         {
-            //agent.isStopped = false;
+            ChangeState(CustomerState.Arrived);
         }
     }
 
     public void ChangeState(CustomerState newCarState)
     {
         this.customerState = newCarState;
-        FSMCustomer();
+        //FSMCustomer();
     }
 
     public void ExitService(Transform target)
