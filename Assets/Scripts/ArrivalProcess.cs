@@ -9,18 +9,23 @@ public class ArrivalProcess : MonoBehaviour
 
     [Header("Exponential Interval Time Properties")]
     [SerializeField] private float arrivalRateInCustomerPerHour = 20;
+
+
+    [Header("Constant & Observed Interval Time Properties")]
     [SerializeField] private float interArrivalTimeInHours;
 
     [Header("Uniform Interval Time Properties")]
     [SerializeField] private float minInterArrivalTimeInSeconds = 3;
     [SerializeField] private float maxInterArrivalTimeInSeconds = 60;
+    
+    [SerializeField] private ArrivalIntervalTimeStrategy arrivalIntervalTimeStrategy = ArrivalIntervalTimeStrategy.UniformIntervalTime;
+
+    [SerializeField] private bool isSimulationRunning = true;
 
     private float interArrivalTimeInMinutes;
     private float interArrivalTimeInSeconds;
 
-    private bool isSimulationRunning = true;
-
-
+    //QueueManager queueManager;
     public enum ArrivalIntervalTimeStrategy
     {
         ConstantIntervalTime,
@@ -29,15 +34,11 @@ public class ArrivalProcess : MonoBehaviour
         ObservedIntervalTime
     }
 
-    public ArrivalIntervalTimeStrategy arrivalIntervalTimeStrategy = ArrivalIntervalTimeStrategy.UniformIntervalTime;
-
-    QueueManager queueManager;
-
     void Start()
     {
         isSimulationRunning = true;
 
-        queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
+        //queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
 
         interArrivalTimeInHours = 1.0f / arrivalRateInCustomerPerHour;
         interArrivalTimeInMinutes = interArrivalTimeInHours * 60;

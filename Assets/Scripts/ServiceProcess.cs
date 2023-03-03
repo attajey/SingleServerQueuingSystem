@@ -4,24 +4,27 @@ using UnityEngine;
 
 public class ServiceProcess : MonoBehaviour
 {
-
-    public GameObject customerInService;
-    public Transform customerExitPlace;
+    [SerializeField] private GameObject customerInService;
+    [SerializeField] private Transform customerExitPlace;
 
     [Header("Exponential Interval Time Properties")]
-    public float serviceRateAsCustomersPerHour = 25;
-    public float interServiceTimeInHours; 
+    [SerializeField] private float serviceRateAsCustomersPerHour = 25;
+
+    [Header("Constant & Observed Interval Time Properties")]
+    [SerializeField] private float interServiceTimeInHours; 
 
     [Header("Uniform Interval Time Properties")]
-    public float minInterServiceTimeInSeconds = 3;
-    public float maxInterServiceTimeInSeconds = 60;
+    [SerializeField] private float minInterServiceTimeInSeconds = 3;
+    [SerializeField] private float maxInterServiceTimeInSeconds = 60;
 
-    public bool generateServices = false;
+    [SerializeField] private ServiceIntervalTimeStrategy serviceIntervalTimeStrategy = ServiceIntervalTimeStrategy.UniformIntervalTime;
+
+    [SerializeField] private bool generateServices = false;
 
     private float interServiceTimeInMinutes;
     private float interServiceTimeInSeconds;
 
-    QueueManager queueManager;
+    //QueueManager queueManager;
 
     public enum ServiceIntervalTimeStrategy
     {
@@ -31,8 +34,6 @@ public class ServiceProcess : MonoBehaviour
         ObservedIntervalTime
     }
 
-    public ServiceIntervalTimeStrategy serviceIntervalTimeStrategy = ServiceIntervalTimeStrategy.UniformIntervalTime;
-
     void Start()
     {
         interServiceTimeInHours = 1.0f / serviceRateAsCustomersPerHour;
@@ -40,13 +41,30 @@ public class ServiceProcess : MonoBehaviour
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
     }
 
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.tag == "Customer")
+    //    {
+    //        customerInService = collision.gameObject;
+
+    //        customerInService.GetComponent<CustomerController>().SetInService(true);
+
+    //        generateServices = true;
+
+    //        StartCoroutine(GenerateServices());
+    //    }
+    //}
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Customer")
         {
             customerInService = other.gameObject;
+
             customerInService.GetComponent<CustomerController>().SetInService(true);
+
             generateServices = true;
+
             StartCoroutine(GenerateServices());
         }
     }
@@ -56,7 +74,9 @@ public class ServiceProcess : MonoBehaviour
         while (generateServices)
         {
             float timeToNextServiceInSec = interServiceTimeInSeconds;
-            Debug.Log("Service Time for current customer: " + timeToNextServiceInSec);
+
+            //Debug.Log("Service Time for current customer: " + timeToNextServiceInSec);
+
             switch (serviceIntervalTimeStrategy)
             {
                 case ServiceIntervalTimeStrategy.ConstantIntervalTime:
@@ -76,12 +96,13 @@ public class ServiceProcess : MonoBehaviour
                     print("No acceptable ServiceIntervalTimeStrategy:" + serviceIntervalTimeStrategy);
                     break;
             }
+
             generateServices = false;
-            Debug.Log("Service Time for next customer: " + timeToNextServiceInSec);
+
+            //Debug.Log("Service Time for next customer: " + timeToNextServiceInSec);
+
             yield return new WaitForSeconds(timeToNextServiceInSec);
         }
         customerInService.GetComponent<CustomerController>().ExitService(customerExitPlace);
-
     }
-
 }

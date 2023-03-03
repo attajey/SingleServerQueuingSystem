@@ -5,14 +5,18 @@ using UnityEngine.AI;
 
 public class CustomerController : MonoBehaviour
 {
-    public NavMeshAgent agent;
+    [SerializeField] private NavMeshAgent agent;
 
-    public Transform target;
-    public Transform exit;
+    [SerializeField] private Transform target;
+    [SerializeField] private Transform exit;
+
+    [SerializeField] private GameObject atmWindow;
+
+    //[SerializeField] private QueueManager queueManager;
+
+    [SerializeField] private CustomerState customerState = CustomerState.None;
 
     public bool InService { get; set; }
-    public GameObject atmWindow;
-    public QueueManager queueManager;
 
     public enum CustomerState
     {
@@ -23,40 +27,47 @@ public class CustomerController : MonoBehaviour
         Serviced
     }
 
-    public CustomerState customerState = CustomerState.None;
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Customer")
+        if (other.gameObject.tag == "ATMWindow")
         {
-            // agent.isStopped = true;
-        }
-        else if (other.gameObject.tag == "ATMWindow")
-        {
-            Debug.Log("Entered trigger atm");
             ChangeState(CustomerState.Servicing);
         }
         else if (other.gameObject.tag == "Exit")
         {
-            //Destroy(this.gameObject);
-            this.gameObject.SetActive(false);
+            Destroy(this.gameObject);
+            //this.gameObject.SetActive(false);
         }
     }
+
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.tag == "ATMWindow")
+    //    {
+    //        ChangeState(CustomerState.Servicing);
+    //    }
+    //    else if (collision.gameObject.tag == "Exit")
+    //    {
+    //        Destroy(this.gameObject);
+    //        //this.gameObject.SetActive(false);
+    //    }
+    //}
     void Start()
     {
         atmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
         exit = GameObject.FindGameObjectWithTag("Exit").transform;
+
         agent = GetComponent<NavMeshAgent>();
+
         target = atmWindow.transform;
 
         customerState = CustomerState.Arrived;
+        FSMCustomer();
     }
 
     void Update()
     {
-
         FSMCustomer();
-
     }
 
     private void FSMCustomer()
@@ -83,33 +94,8 @@ public class CustomerController : MonoBehaviour
 
     private void DoArrived()
     {
-        GetTarget();
-
-        queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
-        queueManager.Add(this.gameObject);
-
         agent.SetDestination(target.position);
-    }
-
-    private void GetTarget()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
-        {
-            if (hit.transform.CompareTag("Customer"))
-            {
-                agent.isStopped = true;
-            }
-            else
-            {
-                agent.isStopped = false;
-            }
-            Debug.Log("HIT : " + hit.transform);
-        }
-        else
-        {
-            agent.isStopped = false;
-        }
+        SetAgentMovement();
     }
 
     private void DoWaiting()
@@ -127,6 +113,35 @@ public class CustomerController : MonoBehaviour
         agent.isStopped = false;
     }
 
+    private void SetAgentMovement()
+    {
+
+        Debug.DrawRay(transform.position, transform.forward);
+        RaycastHit hit;
+        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+        {
+            if (hit.transform.CompareTag("Customer"))
+            {
+                Debug.Log(hit.transform.name);
+                //agent.SetDestination(hit.transform.position);
+                //agent.stoppingDistance= 50f;
+                //agent.isStopped = true;
+                agent.ResetPath();
+                Debug.Log(agent.isStopped);
+            }
+            else
+            {
+                agent.SetDestination(target.position);
+                //agent.stoppingDistance = 0.5f;
+                //agent.isStopped = false;
+            }
+        }
+        else
+        {
+            //agent.isStopped = false;
+        }
+    }
+
     public void ChangeState(CustomerState newCarState)
     {
         this.customerState = newCarState;
@@ -135,7 +150,6 @@ public class CustomerController : MonoBehaviour
 
     public void ExitService(Transform target)
     {
-        queueManager.PopFirst();
         ChangeState(CustomerState.Serviced);
     }
 
@@ -146,7 +160,4 @@ public class CustomerController : MonoBehaviour
             ChangeState(CustomerState.Servicing);
         }
     }
-
-
-
 }
