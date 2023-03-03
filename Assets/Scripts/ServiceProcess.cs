@@ -1,12 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ServiceProcess : MonoBehaviour
 {
+    [SerializeField] private Transform customerExitPlace;
+    [SerializeField] private CustomerQueue customerQueue;
 
-    public GameObject customerInService;
-    public Transform customerExitPlace;
+    public Action<Transform> OnQueueUpdate;
 
     public float serviceRateAsCustomersPerHour = 25; // customer/hour
     public float interServiceTimeInHours; // = 1.0 / ServiceRateAscustomersPerHour;
@@ -19,9 +23,11 @@ public class ServiceProcess : MonoBehaviour
     //Simple generation distribution - Uniform(min,max)
     public float minInterServiceTimeInSeconds = 3;
     public float maxInterServiceTimeInSeconds = 60;
-    
-    //CarController carController;
-    QueueManager queueManager;
+
+    private GameObject customerInService;
+
+    // For Testing
+    ActionTimer pullTimer = new ActionTimer();
 
     public enum ServiceIntervalTimeStrategy
     {
@@ -40,39 +46,42 @@ public class ServiceProcess : MonoBehaviour
         interServiceTimeInMinutes = interServiceTimeInHours * 60;
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
 
-        queueManager = GetComponent<QueueManager>();
+
+        //pullTimer.StartTimer(2f, PullCustomer, null);
+
+        customerQueue.OnfirstArrival += PullCustomer;
     }
 
-    public void AddCustomer(GameObject newCustomer)
+
+    private void Update()
     {
-        GameObject lastCustomer = queueManager.Last();
-        CustomerController newCustomerController = newCustomer.GetComponent<CustomerController>();
-
-        // If the Queue is empty
-        if (lastCustomer == null)
-        {
-            newCustomerController.InitCustomer(transform);
-        }
-        else
-        {
-            newCustomerController.InitCustomer(lastCustomer.transform);            
-        }
-
-        queueManager.Add(newCustomer);    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Customer")
-        {
-            customerInService = other.gameObject;
-            generateServices = true;
-            StartCoroutine(GenerateServices());
-        }
+        //pullTimer.Tick(Time.deltaTime);
     }
+    // > Pulls Customer from Queue and places it on the Atm
+    public void PullCustomer()
+    {
+        if (customerInService != null) return;;
+
+        CustomerController customer = customerQueue.GetFirst().GetComponent<CustomerController>();
+
+        customer.UpdateTarget(gameObject);
+        customer.SetStopDistance(0f);
+        customer.SetOnReachTarget(ServiceCustomer);
+    }
+
+    public void ServiceCustomer(GameObject customer)
+    {
+        Debug.Log("ServingCustomer");
+        //customer.GetComponent<CustomerController>().OnReachTarget -= ServiceCustomer;
+        customerInService = customer;
+        generateServices = true;
+        StartCoroutine(GenerateServices());
+    }    
     IEnumerator GenerateServices()
     {
         while (generateServices)
         {
+            Debug.Log("WhileLoop");
             float timeToNextServiceInSec = interServiceTimeInSeconds;
             switch (serviceIntervalTimeStrategy)
             {
@@ -100,7 +109,7 @@ public class ServiceProcess : MonoBehaviour
             yield return new WaitForSeconds(timeToNextServiceInSec);
 
         }
+        
         customerInService.GetComponent<CustomerController>().ExitService(customerExitPlace);
-
-    }    
+    }
 }

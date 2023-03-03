@@ -6,19 +6,18 @@ using UnityEngine.AI;
 
 public class CustomerController : MonoBehaviour
 {
-    // New Stuff
+    [SerializeField] private NavMeshAgent _agent;
+    [SerializeField] private ServiceProcess ATM;
+    [SerializeField] private CustomerQueue _targetQueue;
+
     private Transform _target;
-    
-    // Old Stuff
-    public NavMeshAgent agent;
-    public Transform target = null;
-    public Transform targetCustomer;
-    public Transform exit = null;
+
+    private bool _inQueue = false;
+
+    public Action<GameObject> OnReachTarget;
+    private bool _onTarget = false;
 
     public bool InService { get; set; }
-    public GameObject AtmWindow;
-
-    //public Transform atm;
 
     public enum CustomerState
     {
@@ -29,23 +28,37 @@ public class CustomerController : MonoBehaviour
         Serviced
     }
     public CustomerState customerState = CustomerState.None;
-    void Awake()
+    void Start()
     {
-        AtmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
-        target = AtmWindow.transform;
-        exit = GameObject.FindGameObjectWithTag("Exit").transform;
-        agent = GetComponent<NavMeshAgent>();       
-    }
-
-    public void InitCustomer(Transform firstTarget)
-    {
-        Debug.Log("Initing Customer");
-        UpdateTarget(firstTarget);
         customerState = CustomerState.Arrived;
-        Debug.Log(firstTarget);
         FSMCustomer();
     }
 
+    public void InitCustomer(CustomerQueue targetQueue)
+    {
+        _targetQueue = targetQueue;
+    }
+
+    public void Update()
+    {
+        if (customerState == CustomerState.Waiting)
+        {
+            DoWaiting();
+        }
+        Debug.Log("On Target: " + _onTarget);
+        if (_onTarget) return;
+        //Debug.Log("Not On Target");
+        if (_target == null) return;
+        //Debug.Log("Target Defined");
+
+        //Debug.Log("Distance to target: " + Vector3.Distance(_target.position, transform.position));
+        if (Vector3.Distance(_target.position, transform.position) <= _agent.stoppingDistance + 0.35f)
+        {
+            Debug.Log("Reaching Target");
+            OnReachTarget?.Invoke(gameObject);
+            _onTarget = true;
+        }
+    }
     private void FSMCustomer()
     {
         switch (customerState)
@@ -69,77 +82,75 @@ public class CustomerController : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if(Vector3.Distance(_target.position, transform.position) < 0.1f)
-        {
-            UpdateTarget(_target);
-        }
-    }
-
+    // States
     private void DoArrived()
     {
-        agent.SetDestination(_target.position);
-        agent.isStopped = false;
-        Debug.Log(agent.destination);
+        UpdateTarget(_targetQueue.GetTarget());
+        _targetQueue.OnTargetUpdate += UpdateTarget;
+        _agent.isStopped = false;
+
+        SetOnReachTarget(EnqueueSelf);
     }
     private void DoWaiting()
     {
-        ;
+        _agent.SetDestination(_target.position);
     }
     private void DoServing()
     {
-        agent.isStopped = true;
+        _agent.isStopped = true;
     }
     private void DoServiced()
     {
-        agent.SetDestination(exit.position);
-        agent.isStopped = false;
-        //throw new NotImplementedException();
+        _agent.SetDestination(_target.position);
+        _agent.isStopped = false;
     }
-    public void ChangeState(CustomerState newCarState)
+    public void ChangeState(CustomerState newCustomerState)
     {
-        this.customerState = newCarState;
+        customerState = newCustomerState;
         FSMCustomer();
-    }
-    public void UpdateTarget(Transform newTarget)
-    {
-        _target = newTarget;
     }
     public void ExitService(Transform target)
     {
+        Debug.Log("Exit Service");
+        UpdateTarget(target.gameObject);
         ChangeState(CustomerState.Serviced);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {       
-        if (other.gameObject.tag == "ATMWindow")
-        {
-            Debug.Log("Entered trigger atm");
-            ChangeState(CustomerState.Servicing);
-        }
-        else if (other.gameObject.tag == "Exit")
-        {
-            Destroy(gameObject);
-        }
+
+    // Helper Functions
+    public void SetOnReachTarget(Action<GameObject> DoOnReach)
+    {
+        _onTarget = false;
+        OnReachTarget = DoOnReach;
+        Debug.Log("SETTING ON_REACH");
+        Debug.Log(OnReachTarget);
+    }
+
+    private void EnqueueSelf(GameObject self)
+    {
+        _inQueue = true;
+        _targetQueue.Enqueue(self);
+        _targetQueue.OnTargetUpdate -= UpdateTarget; // Unsubscribe from notifacations from new customers joining queue.
+        ChangeState(CustomerState.Waiting);
+    }
+
+    public void UpdateTarget(GameObject newTarget)
+    {
+        _target = newTarget.transform;
+        _agent.SetDestination(_target.position);
     }
 
     private void OnDrawGizmos()
     {
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawLine(this.transform.position, target.transform.position);
         if (_target)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(transform.position, _target.position);
-
-        }
-        if (exit)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, exit.transform.position);
-
         }
     }
 
+    internal void SetStopDistance(float value)
+    {
+        _agent.stoppingDistance = value;
+    }
 }
