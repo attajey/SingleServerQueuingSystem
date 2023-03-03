@@ -14,8 +14,6 @@ public class CustomerController : MonoBehaviour
     public GameObject AtmWindow;
     public QueueManager queueManager;
 
-    //public Transform atm;
-
     public enum CustomerState
     {
         None = -1,
@@ -31,7 +29,7 @@ public class CustomerController : MonoBehaviour
         target = AtmWindow.transform;
         exit = GameObject.FindGameObjectWithTag("Exit").transform;
         agent = GetComponent<NavMeshAgent>();
-        
+
         customerState = CustomerState.Arrived;
         FSMCustomer();
     }
@@ -67,30 +65,19 @@ public class CustomerController : MonoBehaviour
 
         agent.SetDestination(targetCustomer.position);
         agent.isStopped = false;
-        //throw new NotImplementedException();
-        //target = GetTarget();
-        //if (target != null)
-        //{
-        //    agent.SetDestination(target.position);
-        //}
     }
     private void DoWaiting()
     {
-        //throw new NotImplementedException();
     }
     private void DoServing()
     {
         agent.isStopped = true;
-
-        //throw new NotImplementedException();
     }
-
 
     private void DoServiced()
     {
         agent.SetDestination(exit.position);
         agent.isStopped = false;
-        //throw new NotImplementedException();
     }
 
     public void ChangeState(CustomerState newCarState)
@@ -101,80 +88,28 @@ public class CustomerController : MonoBehaviour
 
     public void ExitService(Transform target)
     {
-        //this.SetInService(false);
-
         queueManager.PopFirst();
         ChangeState(CustomerState.Serviced);
-        //targetExit = target;
-
-        //navMeshAgent.SetDestination(target.position);
-        //navMeshAgent.isStopped = false;
     }
 
     public void SetInService(bool value)
     {
-        //Chaneg        InService = value;
-        //if (InService)
-        //{
-        //    navMeshAgent.isStopped=true;
-        //}
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("enter the trigger mother fucker");
         if (other.gameObject.tag == "Customer")
         {
-            //this.navMeshAgent.desiredVelocity.
-            //if (targetCar == null)
-            //{
-            //targetCar = other.gameObject.transform;
-            //navMeshAgent.SetDestination(targetCar.position);
-            //}
         }
         else if (other.gameObject.tag == "ATMWindow")
         {
             Debug.Log("Entered trigger atm");
             ChangeState(CustomerState.Servicing);
-            //SetInService(true);
         }
         else if (other.gameObject.tag == "Exit")
         {
             Destroy(this.gameObject);
         }
     }
-
-    //private Transform GetTarget()
-    //{
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
-    //    {
-    //        return hit.transform;
-    //    }
-    //    else
-    //    {
-    //        return atm;
-    //    }
-    //}
-
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawLine(this.transform.position, target.transform.position);
-    //    if (targetCustomer)
-    //    {
-    //        Gizmos.color = Color.yellow;
-    //        Gizmos.DrawLine(this.transform.position, targetCustomer.transform.position);
-
-    //    }
-    //    if (exit)
-    //    {
-    //        Gizmos.color = Color.green;
-    //        Gizmos.DrawLine(this.transform.position, exit.transform.position);
-
-    //    }
-
-
-    //}
-
 }
