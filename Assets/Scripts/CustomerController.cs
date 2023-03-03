@@ -29,33 +29,12 @@ public class CustomerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "ATMWindow")
-        {
-            //ChangeState(CustomerState.Servicing);
-        }
-        else if (other.gameObject.tag == "Exit")
+        if (other.gameObject.tag == "Exit")
         {
             Destroy(this.gameObject);
-            //this.gameObject.SetActive(false);
-        }
-        else if (other.gameObject.tag == "Customer")
-        {
-            //agent.isStopped = true;
         }
     }
 
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.tag == "ATMWindow")
-    //    {
-    //        ChangeState(CustomerState.Servicing);
-    //    }
-    //    else if (collision.gameObject.tag == "Exit")
-    //    {
-    //        Destroy(this.gameObject);
-    //        //this.gameObject.SetActive(false);
-    //    }
-    //}
     void Start()
     {
         atmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
@@ -80,11 +59,11 @@ public class CustomerController : MonoBehaviour
         {
             case CustomerState.Arrived:
                 DoArrived();
-                SetAgentMovement();
+                //SetAgentMovement();
                 break;
             case CustomerState.Waiting:
                 DoWaiting();
-                SetAgentMovement();
+                //SetAgentMovement();
                 break;
             case CustomerState.Servicing:
                 DoServing();
@@ -101,12 +80,27 @@ public class CustomerController : MonoBehaviour
     private void DoArrived()
     {
         agent.SetDestination(target.position);
-        
+        RaycastHit hit;
+        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+        {
+            if (hit.transform.CompareTag("Customer"))
+            {
+                ChangeState(CustomerState.Waiting);
+            }
+        }
     }
 
     private void DoWaiting()
     {
         agent.isStopped = true;
+        RaycastHit hit;
+        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+        {
+            if (!hit.transform.CompareTag("Customer"))
+            {
+                ChangeState(CustomerState.Arrived);
+            }
+        }
     }
 
     private void DoServing()
@@ -120,25 +114,25 @@ public class CustomerController : MonoBehaviour
         agent.isStopped = false;
     }
 
-    private void SetAgentMovement()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 3f)) // Look 5m in front
-        {
-            if (hit.transform.CompareTag("Customer"))
-            {
-                ChangeState(CustomerState.Waiting);
-            }
-            else
-            {
-                ChangeState(CustomerState.Arrived);
-            }
-        }
-        else
-        {
-            ChangeState(CustomerState.Arrived);
-        }
-    }
+    //private void SetAgentMovement()
+    //{
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+    //    {
+    //        if (hit.transform.CompareTag("Customer"))
+    //        {
+    //            ChangeState(CustomerState.Waiting);
+    //        }
+    //        else
+    //        {
+    //            ChangeState(CustomerState.Arrived);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        ChangeState(CustomerState.Arrived);
+    //    }
+    //}
 
     public void ChangeState(CustomerState newCarState)
     {
