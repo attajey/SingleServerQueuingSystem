@@ -8,8 +8,8 @@ public class ServiceProcess : MonoBehaviour
     public GameObject customerInService;
     public Transform customerExitPlace;
 
-    public float serviceRateAsCustomersPerHour = 25; // customer/hour
-    public float interServiceTimeInHours; // = 1.0 / ServiceRateAscustomersPerHour;
+    public float serviceRateAsCustomersPerHour = 25;
+    public float interServiceTimeInHours; 
     private float interServiceTimeInMinutes;
     private float interServiceTimeInSeconds;
 
@@ -36,6 +36,7 @@ public class ServiceProcess : MonoBehaviour
         interServiceTimeInMinutes = interServiceTimeInHours * 60;
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Customer")
@@ -46,6 +47,7 @@ public class ServiceProcess : MonoBehaviour
             StartCoroutine(GenerateServices());
         }
     }
+
     IEnumerator GenerateServices()
     {
         while (generateServices)
@@ -75,5 +77,7 @@ public class ServiceProcess : MonoBehaviour
             yield return new WaitForSeconds(timeToNextServiceInSec);
         }
         customerInService.GetComponent<CustomerController>().ExitService(customerExitPlace);
+
     }
+
 }

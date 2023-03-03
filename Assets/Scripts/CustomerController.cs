@@ -22,7 +22,9 @@ public class CustomerController : MonoBehaviour
         Servicing,
         Serviced
     }
+
     public CustomerState customerState = CustomerState.None;
+
     void Start()
     {
         AtmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
@@ -56,6 +58,7 @@ public class CustomerController : MonoBehaviour
                 break;
         }
     }
+
     private void DoArrived()
     {
         targetCustomer = target;
@@ -66,9 +69,11 @@ public class CustomerController : MonoBehaviour
         agent.SetDestination(targetCustomer.position);
         agent.isStopped = false;
     }
+
     private void DoWaiting()
     {
     }
+
     private void DoServing()
     {
         agent.isStopped = true;
@@ -112,4 +117,5 @@ public class CustomerController : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
 }

@@ -7,23 +7,13 @@ public class ArrivalProcess : MonoBehaviour
     [SerializeField] private GameObject customerPrefab;
     [SerializeField] private Transform customerSpawnPlace;
 
-
-    // For Expo Dist. we need the Lambda (the avg arrival rate, cars/hour)
-
-    // Observed Data
-    [SerializeField] private float arrivalRateInCustomerPerHour = 20; // avg rate
-    [SerializeField] private float interArrivalTimeInHours; // = 1.0 / arrivalRateAsCarsPerHour;
+    [SerializeField] private float arrivalRateInCustomerPerHour = 20;
+    [SerializeField] private float interArrivalTimeInHours;
     private float interArrivalTimeInMinutes;
     private float interArrivalTimeInSeconds;
 
-    // Calculated Data
-    //private float interArrivalTimeInMin; // avg #mins between car arrivals
-
-    // Control Simulation Data
     private bool isSimulationRunning = true;
 
-    //Simple generation distribution - Uniform(min,max)
-    //
     [SerializeField] private float minInterArrivalTimeInSeconds = 3;
     [SerializeField] private float maxInterArrivalTimeInSeconds = 60;
 
@@ -39,10 +29,8 @@ public class ArrivalProcess : MonoBehaviour
 
     QueueManager queueManager;
 
-
     void Start()
     {
-        
         isSimulationRunning = true;
         queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
         interArrivalTimeInHours = 1.0f / arrivalRateInCustomerPerHour;
@@ -57,10 +45,7 @@ public class ArrivalProcess : MonoBehaviour
         {
             GameObject customerGameObject = Instantiate(customerPrefab, customerSpawnPlace.position, Quaternion.identity);
 
-
-            //float nextArrivalTimeInMin = Utilities.GenerateExponentiallyDistributedValue(interArrivalTimeInMinutes);
             float timeToNextArrivalInSec = interArrivalTimeInSeconds;
-
 
             switch (arrivalIntervalTimeStrategy)
             {
@@ -81,10 +66,7 @@ public class ArrivalProcess : MonoBehaviour
                 default:
                     print("No acceptable arrivalIntervalTimeStrategy:" + arrivalIntervalTimeStrategy);
                     break;
-
             }
-
-
             yield return new WaitForSeconds(timeToNextArrivalInSec);
         }
     }
