@@ -8,15 +8,18 @@ public class ServiceProcess : MonoBehaviour
     public GameObject customerInService;
     public Transform customerExitPlace;
 
+    [Header("Exponential Interval Time Properties")]
     public float serviceRateAsCustomersPerHour = 25;
     public float interServiceTimeInHours; 
-    private float interServiceTimeInMinutes;
-    private float interServiceTimeInSeconds;
+
+    [Header("Uniform Interval Time Properties")]
+    public float minInterServiceTimeInSeconds = 3;
+    public float maxInterServiceTimeInSeconds = 60;
 
     public bool generateServices = false;
 
-    public float minInterServiceTimeInSeconds = 3;
-    public float maxInterServiceTimeInSeconds = 60;
+    private float interServiceTimeInMinutes;
+    private float interServiceTimeInSeconds;
 
     QueueManager queueManager;
 
@@ -53,6 +56,7 @@ public class ServiceProcess : MonoBehaviour
         while (generateServices)
         {
             float timeToNextServiceInSec = interServiceTimeInSeconds;
+            Debug.Log("Service Time for current customer: " + timeToNextServiceInSec);
             switch (serviceIntervalTimeStrategy)
             {
                 case ServiceIntervalTimeStrategy.ConstantIntervalTime:
@@ -73,6 +77,7 @@ public class ServiceProcess : MonoBehaviour
                     break;
             }
             generateServices = false;
+            Debug.Log("Service Time for next customer: " + timeToNextServiceInSec);
             yield return new WaitForSeconds(timeToNextServiceInSec);
         }
         customerInService.GetComponent<CustomerController>().ExitService(customerExitPlace);

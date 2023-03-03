@@ -6,12 +6,12 @@ using UnityEngine.AI;
 public class CustomerController : MonoBehaviour
 {
     public NavMeshAgent agent;
-    public Transform target = null;
-    public Transform targetCustomer;
-    public Transform exit = null;
+
+    public Transform target;
+    public Transform exit;
 
     public bool InService { get; set; }
-    public GameObject AtmWindow;
+    public GameObject atmWindow;
     public QueueManager queueManager;
 
     public enum CustomerState
@@ -29,6 +29,7 @@ public class CustomerController : MonoBehaviour
     {
         if (other.gameObject.tag == "Customer")
         {
+            // agent.isStopped = true;
         }
         else if (other.gameObject.tag == "ATMWindow")
         {
@@ -43,13 +44,19 @@ public class CustomerController : MonoBehaviour
     }
     void Start()
     {
-        AtmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
-        target = AtmWindow.transform;
+        atmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
         exit = GameObject.FindGameObjectWithTag("Exit").transform;
         agent = GetComponent<NavMeshAgent>();
+        target = atmWindow.transform;
 
         customerState = CustomerState.Arrived;
+    }
+
+    void Update()
+    {
+
         FSMCustomer();
+
     }
 
     private void FSMCustomer()
@@ -63,7 +70,6 @@ public class CustomerController : MonoBehaviour
                 DoWaiting();
                 break;
             case CustomerState.Servicing:
-                Debug.Log("Entered Servicing");
                 DoServing();
                 break;
             case CustomerState.Serviced:
@@ -77,13 +83,33 @@ public class CustomerController : MonoBehaviour
 
     private void DoArrived()
     {
-        targetCustomer = target;
+        GetTarget();
 
         queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
         queueManager.Add(this.gameObject);
 
-        agent.SetDestination(targetCustomer.position);
-        agent.isStopped = false;
+        agent.SetDestination(target.position);
+    }
+
+    private void GetTarget()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+        {
+            if (hit.transform.CompareTag("Customer"))
+            {
+                agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
+            }
+            Debug.Log("HIT : " + hit.transform);
+        }
+        else
+        {
+            agent.isStopped = false;
+        }
     }
 
     private void DoWaiting()
@@ -115,7 +141,10 @@ public class CustomerController : MonoBehaviour
 
     public void SetInService(bool value)
     {
-
+        if (value)
+        {
+            ChangeState(CustomerState.Servicing);
+        }
     }
 
 

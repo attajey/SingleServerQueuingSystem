@@ -7,15 +7,19 @@ public class ArrivalProcess : MonoBehaviour
     [SerializeField] private GameObject customerPrefab;
     [SerializeField] private Transform customerSpawnPlace;
 
+    [Header("Exponential Interval Time Properties")]
     [SerializeField] private float arrivalRateInCustomerPerHour = 20;
     [SerializeField] private float interArrivalTimeInHours;
+
+    [Header("Uniform Interval Time Properties")]
+    [SerializeField] private float minInterArrivalTimeInSeconds = 3;
+    [SerializeField] private float maxInterArrivalTimeInSeconds = 60;
+
     private float interArrivalTimeInMinutes;
     private float interArrivalTimeInSeconds;
 
     private bool isSimulationRunning = true;
 
-    [SerializeField] private float minInterArrivalTimeInSeconds = 3;
-    [SerializeField] private float maxInterArrivalTimeInSeconds = 60;
 
     public enum ArrivalIntervalTimeStrategy
     {
@@ -32,10 +36,13 @@ public class ArrivalProcess : MonoBehaviour
     void Start()
     {
         isSimulationRunning = true;
+
         queueManager = GameObject.FindGameObjectWithTag("ATMWindow").GetComponent<QueueManager>();
+
         interArrivalTimeInHours = 1.0f / arrivalRateInCustomerPerHour;
         interArrivalTimeInMinutes = interArrivalTimeInHours * 60;
         interArrivalTimeInSeconds = interArrivalTimeInMinutes * 60;
+
         StartCoroutine(GenerateArrivals());
     }
 
