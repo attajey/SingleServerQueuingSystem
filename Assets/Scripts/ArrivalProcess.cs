@@ -56,7 +56,6 @@ public class ArrivalProcess : MonoBehaviour
                     timeToNextArrivalInSec = Random.Range(minInterArrivalTimeInSeconds, maxInterArrivalTimeInSeconds);
                     break;
                 case ArrivalIntervalTimeStrategy.ExponentialIntervalTime:
-                    float U = Random.value;
                     float Lambda = 1 / arrivalRateInCustomerPerHour;
                     timeToNextArrivalInSec = Utilities.GenerateExponentiallyDistributedValue(Lambda);
                     break;

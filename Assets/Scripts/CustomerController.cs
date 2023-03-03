@@ -25,6 +25,22 @@ public class CustomerController : MonoBehaviour
 
     public CustomerState customerState = CustomerState.None;
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Customer")
+        {
+        }
+        else if (other.gameObject.tag == "ATMWindow")
+        {
+            Debug.Log("Entered trigger atm");
+            ChangeState(CustomerState.Servicing);
+        }
+        else if (other.gameObject.tag == "Exit")
+        {
+            //Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
+        }
+    }
     void Start()
     {
         AtmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
@@ -102,20 +118,6 @@ public class CustomerController : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Customer")
-        {
-        }
-        else if (other.gameObject.tag == "ATMWindow")
-        {
-            Debug.Log("Entered trigger atm");
-            ChangeState(CustomerState.Servicing);
-        }
-        else if (other.gameObject.tag == "Exit")
-        {
-            Destroy(this.gameObject);
-        }
-    }
+
 
 }

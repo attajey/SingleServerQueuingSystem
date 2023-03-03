@@ -62,7 +62,6 @@ public class ServiceProcess : MonoBehaviour
                     timeToNextServiceInSec = Random.Range(minInterServiceTimeInSeconds, maxInterServiceTimeInSeconds);
                     break;
                 case ServiceIntervalTimeStrategy.ExponentialIntervalTime:
-                    float U = Random.value;
                     float Lambda = 1 / serviceRateAsCustomersPerHour;
                     timeToNextServiceInSec = Utilities.GenerateExponentiallyDistributedValue(Lambda);
                     break;
