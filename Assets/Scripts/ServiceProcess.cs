@@ -34,41 +34,12 @@ public class ServiceProcess : MonoBehaviour
         ExponentialIntervalTime,
         ObservedIntervalTime
     }
-
     void Start()
     {
         interServiceTimeInHours = 1.0f / serviceRateAsCustomersPerHour;
         interServiceTimeInMinutes = interServiceTimeInHours * 60;
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
     }
-
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.tag == "Customer")
-    //    {
-    //        customerInService = collision.gameObject;
-
-    //        customerInService.GetComponent<CustomerController>().SetInService(true);
-
-    //        generateServices = true;
-
-    //        StartCoroutine(GenerateServices());
-    //    }
-    //}
-
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if (other.gameObject.tag == "Customer")
-    //    {
-    //        customerInService = other.gameObject;
-
-    //        customerInService.GetComponent<CustomerController>().SetInService(true);
-
-    //        generateServices = true;
-
-    //        StartCoroutine(GenerateServices());
-    //    }
-    //}
 
     private void OnCollisionEnter(Collision collision)
     {
