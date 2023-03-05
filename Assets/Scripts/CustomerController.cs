@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class CustomerController : MonoBehaviour
 {
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private Animator anim;
 
     [SerializeField] private Transform target;
     [SerializeField] private Transform exit;
@@ -41,6 +42,7 @@ public class CustomerController : MonoBehaviour
         exit = GameObject.FindGameObjectWithTag("Exit").transform;
 
         agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
 
         target = atmWindow.transform;
 
@@ -50,6 +52,16 @@ public class CustomerController : MonoBehaviour
 
     void Update()
     {
+        if (transform.position.z > -12.5f && transform.position.z < -12f)
+        {
+            anim.SetFloat("xVelocity", 0f);
+
+        }
+        else
+        {
+            anim.SetFloat("xVelocity", 1f);
+
+        }
         FSMCustomer();
     }
 
