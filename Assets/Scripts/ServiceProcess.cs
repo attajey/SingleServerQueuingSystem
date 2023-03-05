@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ServiceProcess : MonoBehaviour
@@ -55,11 +56,25 @@ public class ServiceProcess : MonoBehaviour
     //    }
     //}
 
-    private void OnTriggerEnter(Collider other)
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.gameObject.tag == "Customer")
+    //    {
+    //        customerInService = other.gameObject;
+
+    //        customerInService.GetComponent<CustomerController>().SetInService(true);
+
+    //        generateServices = true;
+
+    //        StartCoroutine(GenerateServices());
+    //    }
+    //}
+
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.gameObject.tag == "Customer")
+        if (collision.gameObject.tag == "Customer")
         {
-            customerInService = other.gameObject;
+            customerInService = collision.gameObject;
 
             customerInService.GetComponent<CustomerController>().SetInService(true);
 

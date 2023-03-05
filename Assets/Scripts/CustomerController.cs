@@ -6,12 +6,11 @@ using UnityEngine.AI;
 public class CustomerController : MonoBehaviour
 {
     [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private Animator anim;
 
     [SerializeField] private Transform target;
     [SerializeField] private Transform exit;
 
-    [SerializeField] private GameObject atmWindow;
+    [SerializeField] private Transform atm;
 
     //[SerializeField] private QueueManager queueManager;
 
@@ -28,9 +27,9 @@ public class CustomerController : MonoBehaviour
         Serviced
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.gameObject.tag == "Exit")
+        if (collision.gameObject.tag == "Exit")
         {
             Destroy(this.gameObject);
         }
@@ -38,30 +37,18 @@ public class CustomerController : MonoBehaviour
 
     void Start()
     {
-        atmWindow = GameObject.FindGameObjectWithTag("ATMWindow");
+        atm = GameObject.FindGameObjectWithTag("ATM").transform;
         exit = GameObject.FindGameObjectWithTag("Exit").transform;
 
         agent = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
 
-        target = atmWindow.transform;
+        target = atm.transform;
 
         customerState = CustomerState.Arrived;
-        //FSMCustomer();
     }
 
     void Update()
     {
-        if (transform.position.z > -12.5f && transform.position.z < -12f)
-        {
-            anim.SetFloat("xVelocity", 0f);
-
-        }
-        else
-        {
-            anim.SetFloat("xVelocity", 1f);
-
-        }
         FSMCustomer();
     }
 
@@ -71,11 +58,9 @@ public class CustomerController : MonoBehaviour
         {
             case CustomerState.Arrived:
                 DoArrived();
-                //SetAgentMovement();
                 break;
             case CustomerState.Waiting:
                 DoWaiting();
-                //SetAgentMovement();
                 break;
             case CustomerState.Servicing:
                 DoServing();
@@ -91,65 +76,31 @@ public class CustomerController : MonoBehaviour
 
     private void DoArrived()
     {
-        agent.SetDestination(target.position);
-        RaycastHit hit;
-        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
+        target = GetTarget();
+        if (target != null)
         {
-            if (hit.transform.CompareTag("Customer"))
-            {
-                ChangeState(CustomerState.Waiting);
-            }
+            agent.SetDestination(target.position);
+
         }
     }
 
     private void DoWaiting()
     {
-        agent.isStopped = true;
-        RaycastHit hit;
-        if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
-        {
-            if (!hit.transform.CompareTag("Customer"))
-            {
-                ChangeState(CustomerState.Arrived);
-            }
-        }
+
     }
 
     private void DoServing()
     {
-        agent.isStopped = true;
     }
 
     private void DoServiced()
     {
         agent.SetDestination(exit.position);
-        agent.isStopped = false;
     }
-
-    //private void SetAgentMovement()
-    //{
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(this.transform.position, this.transform.forward, out hit, 5f)) // Look 5m in front
-    //    {
-    //        if (hit.transform.CompareTag("Customer"))
-    //        {
-    //            ChangeState(CustomerState.Waiting);
-    //        }
-    //        else
-    //        {
-    //            ChangeState(CustomerState.Arrived);
-    //        }
-    //    }
-    //    else
-    //    {
-    //        ChangeState(CustomerState.Arrived);
-    //    }
-    //}
 
     public void ChangeState(CustomerState newCarState)
     {
         this.customerState = newCarState;
-        //FSMCustomer();
     }
 
     public void ExitService(Transform target)
@@ -162,6 +113,18 @@ public class CustomerController : MonoBehaviour
         if (value)
         {
             ChangeState(CustomerState.Servicing);
+        }
+    }
+    private Transform GetTarget()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, 5f))
+        {
+            return hit.transform;
+        }
+        else
+        {
+            return atm;
         }
     }
 }

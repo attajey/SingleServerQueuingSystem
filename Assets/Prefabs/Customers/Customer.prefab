@@ -400,8 +400,8 @@ Transform:
   m_GameObject: {fileID: 6252356961377389083}
   m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.8, y: 1.8, z: 1.8}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6252356961376966623}
   - {fileID: 6252356961376964985}
@@ -466,7 +466,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   target: {fileID: 0}
   exit: {fileID: 0}
-  atmWindow: {fileID: 0}
+  atm: {fileID: 0}
   customerState: -1
 --- !u!54 &4939157068173469060
 Rigidbody:
@@ -492,7 +492,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6252356961377389083}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 9.490135, y: 2.9516122, z: 0.8479446}
