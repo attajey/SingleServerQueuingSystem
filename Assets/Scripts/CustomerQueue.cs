@@ -27,6 +27,7 @@ public class CustomerQueue : MonoBehaviour
         else
         {
             queueManager.First().GetComponent<CustomerController>().UpdateTarget(gameObject);
+            OnTargetUpdate?.Invoke(queueManager.Last());
         }
         return customer;
 
@@ -46,7 +47,7 @@ public class CustomerQueue : MonoBehaviour
 
     public void Enqueue(GameObject customer)
     {
-        OnTargetUpdate.Invoke(customer);
+        OnTargetUpdate?.Invoke(customer);
         queueManager.Add(customer);
 
         // If queue has one person in it after enqueuing, then they are a first arrival

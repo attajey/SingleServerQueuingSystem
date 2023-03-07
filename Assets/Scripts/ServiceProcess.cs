@@ -66,17 +66,14 @@ public class ServiceProcess : MonoBehaviour
 
         customer.UpdateTarget(gameObject);
         customer.SetStopDistance(0f);
-        customer.SetOnReachTarget(ServiceCustomer);
     }
 
-    public void ServiceCustomer(GameObject customer)
+    private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("ServingCustomer");
-        //customer.GetComponent<CustomerController>().OnReachTarget -= ServiceCustomer;
-        customerInService = customer;
+        customerInService = other.gameObject;
         generateServices = true;
         StartCoroutine(GenerateServices());
-    }    
+    }  
     IEnumerator GenerateServices()
     {
         while (generateServices)
@@ -105,11 +102,14 @@ public class ServiceProcess : MonoBehaviour
 
             }
 
-            generateServices = false;
+            Debug.Log("Wait Time: " + timeToNextServiceInSec);
             yield return new WaitForSeconds(timeToNextServiceInSec);
+            generateServices = false;
 
         }
         
         customerInService.GetComponent<CustomerController>().ExitService(customerExitPlace);
+        customerInService = null;
+        PullCustomer();
     }
 }

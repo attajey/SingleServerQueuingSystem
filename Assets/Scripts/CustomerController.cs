@@ -12,9 +12,9 @@ public class CustomerController : MonoBehaviour
 
     private Transform _target;
 
-    private bool _inQueue = false;
+    private float queueSelfDistance = 0.15f;
 
-    public Action<GameObject> OnReachTarget;
+    private bool _inQueue = false;
     private bool _onTarget = false;
 
     public bool InService { get; set; }
@@ -23,6 +23,7 @@ public class CustomerController : MonoBehaviour
     {
         None = -1,
         Arrived,
+        MoveToQueue,
         Waiting,
         Servicing,
         Serviced
@@ -45,19 +46,10 @@ public class CustomerController : MonoBehaviour
         {
             DoWaiting();
         }
-        Debug.Log("On Target: " + _onTarget);
-        if (_onTarget) return;
-        //Debug.Log("Not On Target");
-        if (_target == null) return;
-        //Debug.Log("Target Defined");
-
-        //Debug.Log("Distance to target: " + Vector3.Distance(_target.position, transform.position));
-        if (Vector3.Distance(_target.position, transform.position) <= _agent.stoppingDistance + 0.35f)
+        else if (customerState == CustomerState.MoveToQueue)
         {
-            Debug.Log("Reaching Target");
-            OnReachTarget?.Invoke(gameObject);
-            _onTarget = true;
-        }
+            DoMoveToQueue();
+        }       
     }
     private void FSMCustomer()
     {
@@ -65,6 +57,9 @@ public class CustomerController : MonoBehaviour
         {
             case CustomerState.Arrived:
                 DoArrived();
+                break;
+            case CustomerState.MoveToQueue:
+                DoMoveToQueue();
                 break;
             case CustomerState.Waiting:
                 DoWaiting();
@@ -89,10 +84,31 @@ public class CustomerController : MonoBehaviour
         _targetQueue.OnTargetUpdate += UpdateTarget;
         _agent.isStopped = false;
 
-        SetOnReachTarget(EnqueueSelf);
+        ChangeState(CustomerState.MoveToQueue);
+        queueSelfDistance = _agent.radius * 2 + 0.15f;
+    }
+    private void DoMoveToQueue()
+    {
+        _agent.SetDestination(_target.position);
+
+        Vector3 targetZeroHeight = new Vector3(_target.position.x, 0f, _target.position.z);
+        Vector3 selfZeroHeight = new Vector3(transform.position.x, 0f, transform.position.z);
+
+        Debug.Log("DoMoveToQueue");
+        Debug.Log("Condition to Queue Self: " + Vector3.Distance(targetZeroHeight, selfZeroHeight) + " <= " + queueSelfDistance + " --> "
+            + (Vector3.Distance(targetZeroHeight, selfZeroHeight) <= queueSelfDistance));
+
+        if (Vector3.Distance(targetZeroHeight, selfZeroHeight) <= queueSelfDistance)
+        {
+            Debug.Log("Enquing self and waiting");
+            EnqueueSelf(gameObject);
+            ChangeState(CustomerState.Waiting);
+            _agent.stoppingDistance = _agent.radius * 2;
+        }
     }
     private void DoWaiting()
     {
+        Debug.Log("DoWaiting");
         _agent.SetDestination(_target.position);
     }
     private void DoServing()
@@ -118,19 +134,14 @@ public class CustomerController : MonoBehaviour
 
 
     // Helper Functions
-    public void SetOnReachTarget(Action<GameObject> DoOnReach)
-    {
-        _onTarget = false;
-        OnReachTarget = DoOnReach;
-        Debug.Log("SETTING ON_REACH");
-        Debug.Log(OnReachTarget);
-    }
-
     private void EnqueueSelf(GameObject self)
     {
+        /* Unsubscribe from notifacations from new customers joining queue before this customer joins queue,
+            That way this customers target does not become itself
+         */
+        _targetQueue.OnTargetUpdate -= UpdateTarget; 
         _inQueue = true;
         _targetQueue.Enqueue(self);
-        _targetQueue.OnTargetUpdate -= UpdateTarget; // Unsubscribe from notifacations from new customers joining queue.
         ChangeState(CustomerState.Waiting);
     }
 
