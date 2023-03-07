@@ -5,19 +5,16 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class CustomerController : MonoBehaviour
-{
+{   
+    public CustomerData customerData;
+
     [SerializeField] private NavMeshAgent _agent;
-    [SerializeField] private ServiceProcess ATM;
-    [SerializeField] private CustomerQueue _targetQueue;
+    [SerializeField] private float QUEUE_SEPERATION_DISTANCE;
 
     private Transform _target;
+    private CustomerQueue _targetQueue;
 
     private float queueSelfDistance = 0.15f;
-
-    private bool _inQueue = false;
-    private bool _onTarget = false;
-
-    public bool InService { get; set; }
 
     public enum CustomerState
     {
@@ -85,7 +82,7 @@ public class CustomerController : MonoBehaviour
         _agent.isStopped = false;
 
         ChangeState(CustomerState.MoveToQueue);
-        queueSelfDistance = _agent.radius * 2 + 0.15f;
+        queueSelfDistance = _agent.radius * 2 + QUEUE_SEPERATION_DISTANCE;
     }
     private void DoMoveToQueue()
     {
@@ -94,21 +91,19 @@ public class CustomerController : MonoBehaviour
         Vector3 targetZeroHeight = new Vector3(_target.position.x, 0f, _target.position.z);
         Vector3 selfZeroHeight = new Vector3(transform.position.x, 0f, transform.position.z);
 
-        Debug.Log("DoMoveToQueue");
-        Debug.Log("Condition to Queue Self: " + Vector3.Distance(targetZeroHeight, selfZeroHeight) + " <= " + queueSelfDistance + " --> "
-            + (Vector3.Distance(targetZeroHeight, selfZeroHeight) <= queueSelfDistance));
+        //Debug.Log("DoMoveToQueue");
+        //Debug.Log("Condition to Queue Self: " + Vector3.Distance(targetZeroHeight, selfZeroHeight) + " <= " + queueSelfDistance + " --> "
+        //    + (Vector3.Distance(targetZeroHeight, selfZeroHeight) <= queueSelfDistance));
 
         if (Vector3.Distance(targetZeroHeight, selfZeroHeight) <= queueSelfDistance)
         {
-            Debug.Log("Enquing self and waiting");
             EnqueueSelf(gameObject);
             ChangeState(CustomerState.Waiting);
-            _agent.stoppingDistance = _agent.radius * 2;
+            _agent.stoppingDistance = _agent.radius * 2 + QUEUE_SEPERATION_DISTANCE;
         }
     }
     private void DoWaiting()
     {
-        Debug.Log("DoWaiting");
         _agent.SetDestination(_target.position);
     }
     private void DoServing()
@@ -131,7 +126,7 @@ public class CustomerController : MonoBehaviour
         UpdateTarget(target.gameObject);
         ChangeState(CustomerState.Serviced);
     }
-
+    
 
     // Helper Functions
     private void EnqueueSelf(GameObject self)
@@ -139,8 +134,7 @@ public class CustomerController : MonoBehaviour
         /* Unsubscribe from notifacations from new customers joining queue before this customer joins queue,
             That way this customers target does not become itself
          */
-        _targetQueue.OnTargetUpdate -= UpdateTarget; 
-        _inQueue = true;
+        _targetQueue.OnTargetUpdate -= UpdateTarget;
         _targetQueue.Enqueue(self);
         ChangeState(CustomerState.Waiting);
     }
@@ -160,7 +154,7 @@ public class CustomerController : MonoBehaviour
         }
     }
 
-    internal void SetStopDistance(float value)
+    public void SetStopDistance(float value)
     {
         _agent.stoppingDistance = value;
     }

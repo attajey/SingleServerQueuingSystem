@@ -477,8 +477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _agent: {fileID: 377092027}
-  ATM: {fileID: 0}
-  _targetQueue: {fileID: 0}
+  QUEUE_SEPERATION_DISTANCE: 1
   customerState: -1
 --- !u!1 &6252356961377389087
 GameObject:

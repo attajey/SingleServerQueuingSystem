@@ -11,6 +11,14 @@ public class CustomerQueue : MonoBehaviour
     public Action OnfirstArrival;
     public Action<GameObject> OnTargetUpdate;
 
+    public bool Empty
+    {
+        get
+        {
+            return queueManager.Count() <= 0;
+        }
+    }
+
     public GameObject GetFirst()
     {
         GameObject customer = queueManager.PopFirst();
@@ -47,8 +55,9 @@ public class CustomerQueue : MonoBehaviour
 
     public void Enqueue(GameObject customer)
     {
-        OnTargetUpdate?.Invoke(customer);
+        
         queueManager.Add(customer);
+        OnTargetUpdate?.Invoke(customer);
 
         // If queue has one person in it after enqueuing, then they are a first arrival
         if (queueManager.Count() == 1)

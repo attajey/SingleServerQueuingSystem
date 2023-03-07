@@ -14,7 +14,7 @@ public class TimeScaler : MonoBehaviour
     }
     void Update()
     {
-        Time.timeScale = slider.value*10;
+        Time.timeScale = slider.value;
            
     }
 

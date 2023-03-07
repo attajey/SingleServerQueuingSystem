@@ -22,7 +22,6 @@ public class ArrivalProcess : MonoBehaviour
     private float interArrivalTimeInSeconds;
 
     // Calculated Data
-    //private float interArrivalTimeInMin; // avg #mins between car arrivals
 
     // Control Simulation Data
     private bool isSimulationRunning = true;
@@ -57,6 +56,7 @@ public class ArrivalProcess : MonoBehaviour
         {            
             GameObject customerGameObject = Instantiate(customerPrefab, customerSpawnPlace.position, Quaternion.identity);
             customerGameObject.GetComponent<CustomerController>().InitCustomer(queue);
+            CustomerDataManager.Instance.CustomerSpawned();
 
             float timeToNextArrivalInSec = interArrivalTimeInSeconds;
 
@@ -83,8 +83,9 @@ public class ArrivalProcess : MonoBehaviour
 
             }
 
-
+            Debug.Log(timeToNextArrivalInSec);
             yield return new WaitForSeconds(timeToNextArrivalInSec);
+            CustomerDataManager.Instance.AddSpawnIntervalTime(timeToNextArrivalInSec);
         }
     }
 }

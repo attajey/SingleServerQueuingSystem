@@ -46,22 +46,14 @@ public class ServiceProcess : MonoBehaviour
         interServiceTimeInMinutes = interServiceTimeInHours * 60;
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
 
-
-        //pullTimer.StartTimer(2f, PullCustomer, null);
-
         customerQueue.OnfirstArrival += PullCustomer;
     }
 
-
-    private void Update()
-    {
-        //pullTimer.Tick(Time.deltaTime);
-    }
     // > Pulls Customer from Queue and places it on the Atm
     public void PullCustomer()
     {
-        if (customerInService != null) return;;
-
+        if (customerInService != null) return;
+        if (customerQueue.Empty) return;
         CustomerController customer = customerQueue.GetFirst().GetComponent<CustomerController>();
 
         customer.UpdateTarget(gameObject);
@@ -72,13 +64,12 @@ public class ServiceProcess : MonoBehaviour
     {
         customerInService = other.gameObject;
         generateServices = true;
-        StartCoroutine(GenerateServices());
+        StartCoroutine(GenerateService());
     }  
-    IEnumerator GenerateServices()
+    IEnumerator GenerateService()
     {
         while (generateServices)
         {
-            Debug.Log("WhileLoop");
             float timeToNextServiceInSec = interServiceTimeInSeconds;
             switch (serviceIntervalTimeStrategy)
             {
@@ -102,12 +93,11 @@ public class ServiceProcess : MonoBehaviour
 
             }
 
-            Debug.Log("Wait Time: " + timeToNextServiceInSec);
             yield return new WaitForSeconds(timeToNextServiceInSec);
             generateServices = false;
-
         }
-        
+
+        CustomerDataManager.Instance.CustomerServiced();
         customerInService.GetComponent<CustomerController>().ExitService(customerExitPlace);
         customerInService = null;
         PullCustomer();
