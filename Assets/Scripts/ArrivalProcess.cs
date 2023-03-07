@@ -6,7 +6,11 @@ public class ArrivalProcess : MonoBehaviour
 {
     [SerializeField] private GameObject customerPrefab;
     [SerializeField] private Transform customerSpawnPlace;
-    [SerializeField] private ServiceProcess atm;
+
+    [Header("Customer Init Data")]
+    [SerializeField] private ServiceProcess ATM;
+    [SerializeField] private Transform exit;
+    [SerializeField] private CustomerQueue queue;
 
 
     // For Expo Dist. we need the Lambda (the avg arrival rate, cars/hour)
@@ -18,7 +22,6 @@ public class ArrivalProcess : MonoBehaviour
     private float interArrivalTimeInSeconds;
 
     // Calculated Data
-    //private float interArrivalTimeInMin; // avg #mins between car arrivals
 
     // Control Simulation Data
     private bool isSimulationRunning = true;
@@ -50,9 +53,10 @@ public class ArrivalProcess : MonoBehaviour
     IEnumerator GenerateArrivals()
     {
         while (isSimulationRunning)
-        {
+        {            
             GameObject customerGameObject = Instantiate(customerPrefab, customerSpawnPlace.position, Quaternion.identity);
-            atm.AddCustomer(customerGameObject);
+            customerGameObject.GetComponent<CustomerController>().InitCustomer(queue);
+            CustomerDataManager.Instance.CustomerSpawned();
 
             float timeToNextArrivalInSec = interArrivalTimeInSeconds;
 
@@ -79,8 +83,9 @@ public class ArrivalProcess : MonoBehaviour
 
             }
 
-
+            Debug.Log(timeToNextArrivalInSec);
             yield return new WaitForSeconds(timeToNextArrivalInSec);
+            CustomerDataManager.Instance.AddSpawnIntervalTime(timeToNextArrivalInSec);
         }
     }
 }
