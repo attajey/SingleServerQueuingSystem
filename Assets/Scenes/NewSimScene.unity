@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028328, g: 0.22571322, b: 0.30692163, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1496,7 +1496,7 @@ MonoBehaviour:
   ATM: {fileID: 911220309}
   exit: {fileID: 2067208296}
   queue: {fileID: 390994702}
-  arrivalRateInCustomerPerHour: 12
+  arrivalRateInCustomerPerHour: 20
   interArrivalTimeInHours: 0
   minInterArrivalTimeInSeconds: 3
   maxInterArrivalTimeInSeconds: 60
@@ -2298,7 +2298,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customerExitPlace: {fileID: 2067208296}
   customerQueue: {fileID: 390994702}
-  serviceRateAsCustomersPerHour: 20
+  serviceRateAsCustomersPerHour: 12
   interServiceTimeInHours: 0
   generateServices: 1
   minInterServiceTimeInSeconds: 3

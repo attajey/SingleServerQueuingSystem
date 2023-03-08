@@ -65,8 +65,4 @@ public class CustomerQueue : MonoBehaviour
             OnfirstArrival.Invoke();
         }
     }
-
-
-
-
 }

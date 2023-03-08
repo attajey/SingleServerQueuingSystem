@@ -16,6 +16,8 @@ public class CustomerController : MonoBehaviour
 
     private float queueSelfDistance = 0.15f;
 
+    Action currentState;
+
     public enum CustomerState
     {
         None = -1,
